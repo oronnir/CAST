@@ -1,0 +1,5 @@
+ENDPOINT = "https://???.cognitiveservices.azure.com/"
+training_key = ""
+prediction_key = ""
+prediction_resource_id = "/subscriptions/???/.../???/providers/Microsoft.CognitiveServices/accounts/???-Prediction"
+API_URL = "https://???.cognitiveservices.azure.com/"
