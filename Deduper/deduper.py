@@ -15,7 +15,8 @@ EXE_PATH = config['deduper']
 class PranjaWrapper:
     """
     This module computes Edge Directional Histogram EDH features for duplicates consolidation.
-    Its application optimizes the downstream clustering but it is not mandatory for CAST.
+
+    NOTE: Its application optimizes the downstream clustering, but it is not mandatory for CAST.
     More details are available in the paper.
     """
     def __init__(self):

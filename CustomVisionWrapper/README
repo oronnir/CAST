@@ -13,7 +13,7 @@ example) python predict_classification.py project_id iteration_id prediction_key
 
 3. Run end2end pipeline including create project, upload image, train project, publish iteration, prediction
 example) python end2end_ic.py trainset_path testset_path dataset_name domain
- e.g. python end2end_ic.py classification_datasets\soda\train classification_datasets\soda\test soda_demo General
+ e.g. python end2end_ic.py classification_datasets\train classification_datasets\test soda_demo General
 
 output:
 print out confusion matrix
@@ -29,10 +29,10 @@ Setup:
 How to prepare a dataset. For the detail of the format, please read the comments in the scripts.
 
 1. Create a project.
-example) python create_od_project.py detection_datasets/animal661/train_images.txt detection_datasets/animal661/labels.txt
+example) python create_od_project.py detection_datasets/train_images.txt detection_datasets/labels.txt
 
 2. Evaluate the project.
-example) python predict_od.py <project_id> <iteration_id> detection_datasets/animal661/test_images.txt detection_datasets/animal661/labels.txt
+example) python predict_od.py <project_id> <iteration_id> detection_datasets/test_images.txt detection_datasets/labels.txt
 
 3. Run end2end pipeline including create project, upload image, train project, publish iteration, prediction
-example) python end2end_od.py detection_datasets\animal661\train_images.txt detection_datasets\animal661\labels.txt detection_datasets\animal661\test_images.txt General
+example) python end2end_od.py detection_datasets\train_images.txt detection_datasets\labels.txt detection_datasets\test_images.txt General

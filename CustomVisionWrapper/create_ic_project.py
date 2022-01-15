@@ -49,6 +49,7 @@ class ICProjectCreator(object):
                             list_of_images.append(ImageFileCreateEntry(name=img_path, contents=img_data.read(),
                                                                        tag_ids=[idx_tag.id]))
                             list_of_tags.append(idx_tag.id)
+
                             # Updates the image count the upload the batch if the count reached MAX_IMAGES
                             image_count += 1
                             if image_count == MAX_IMAGES:
