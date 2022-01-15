@@ -5,15 +5,13 @@ import random
 import sys
 import time
 import warnings
-from itertools import groupby
 
 import numpy as np
 
 import Animator.clustering_methods as cm
 import Animator.normalization_methods as nm
 from Deduper.deduper import GraphAnalyzer, PranjaWrapper
-from Detector.background_cropper import SubFrame
-from Animator.bbox_grouper_api import CharacterDetectionOutput, BackgroundNegativeExample
+from Animator.bbox_grouper_api import CharacterDetectionOutput
 from Animator.feature_clustering_session import CharacterGrouper
 from Animator.simple_clustering import my_simple_clustering
 from Animator.utils import eprint, profiling
@@ -165,21 +163,9 @@ class BboxGrouper(object):
         crop all background negative examples that do not intersect with characters
         """
         all_bg_examples = []
-        boxes_grouped_by_keyframe = groupby(self.ALL_CHARACTER_DETECTIONS.CharacterBoundingBoxes,
-                                            key=lambda character_bounding_box: character_bounding_box.KeyframeThumbnailId)
 
-        for keyframe_index, keyframe_detections in boxes_grouped_by_keyframe:
-            characters_subframes = {SubFrame(keyframe_detection.Rect.Y, keyframe_detection.Rect.X,
-                                             keyframe_detection.Rect.Width, keyframe_detection.Rect.Height)
-                                    for keyframe_detection in keyframe_detections}
-            keyframe_subframe = SubFrame(0, 0, self.KEYFRAME_WIDTH, self.KEYFRAME_HEIGHT)
-            background_examples = SubFrame.get_background_subframes(keyframe_subframe, characters_subframes,
-                                                                    min_subframe_width, min_subframe_height,
-                                                                    min_subframe_area, max_unique_boxes)
-            formatted_examples = [BackgroundNegativeExample(keyframe_index, bg.left, bg.top, bg.width, bg.height)
-                                  for bg in background_examples]
-            for formatted_example in formatted_examples:
-                all_bg_examples.append(formatted_example)
+        # This part was omitted to comply with patent's rights but has an impact only on the image classification app.
+
         return all_bg_examples
 
     def group_characters_single_video(self, time_marker):

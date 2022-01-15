@@ -1,7 +1,6 @@
 import networkx as nx
 import numpy as np
 import numpy.linalg as LA
-# from community import community_louvain
 from sklearn.metrics.pairwise import cosine_similarity
 from .utils import eprint, index_to_val_dict
 

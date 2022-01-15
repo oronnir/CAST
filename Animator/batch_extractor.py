@@ -272,5 +272,5 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except Exception as e:
-        eprint('Failed with exception {}'.format(e), e)
+    except Exception as exception:
+        eprint('Failed with exception {}'.format(exception), exception)
