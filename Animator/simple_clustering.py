@@ -5,8 +5,8 @@ from copy import deepcopy
 import numpy as np
 
 from Animator.clustering_methods import k_means, c_dbscan, c_optics
-from Animator.feature_clustering_session import CharacterGrouper
-from Animator.feature_clustering_session import GroupingEvaluator
+from Animator.cluster_logic import CharacterGrouper
+from Animator.cluster_logic import GroupingEvaluator
 
 
 def my_simple_clustering(ids, features, frame_ids):

@@ -5,7 +5,7 @@ import math
 from EvaluationUtils.detection_mapping import DetectionMapping
 from Animator.utils import eprint
 from EvaluationUtils.image_utils import crop_image, save_image
-from Animator.bbox_grouper_api import CharacterDetectionOutput
+from Animator.consolidation_api import CharacterDetectionOutput
 from tqdm import tqdm
 import numpy as np
 from PIL import Image, ImageDraw

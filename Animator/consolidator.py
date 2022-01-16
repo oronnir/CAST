@@ -11,8 +11,8 @@ import numpy as np
 import Animator.clustering_methods as cm
 import Animator.normalization_methods as nm
 from Deduper.deduper import GraphAnalyzer, PranjaWrapper
-from Animator.bbox_grouper_api import CharacterDetectionOutput
-from Animator.feature_clustering_session import CharacterGrouper
+from Animator.consolidation_api import CharacterDetectionOutput
+from Animator.cluster_logic import CharacterGrouper
 from Animator.simple_clustering import my_simple_clustering
 from Animator.utils import eprint, profiling
 

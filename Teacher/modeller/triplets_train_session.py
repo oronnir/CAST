@@ -18,10 +18,10 @@ import wandb
 
 from Teacher.modeller import dist_utils as dist_utils
 from Teacher.modeller.logger import Logger
-from Teacher.torcher.classifier_dataloaders import triplet_data_loader
-from Teacher.torcher.classifier_train_utils import get_criterion, get_optimizer, get_scheduler, train
-from Teacher.torcher.custom_resnet import ResNetWithFeatures
-from Teacher.torcher.weights_init import dense_layers_init
+from Teacher.torcher.classification_loaders import triplet_data_loader
+from Teacher.torcher.classification_utils import get_criterion, get_optimizer, get_scheduler, train
+from Teacher.torcher.resnet import ResNetWithFeatures
+from Teacher.torcher.weights_initializer import dense_layers_init
 
 model_names = sorted(name for name in models.__dict__
                      if name.islower() and not name.startswith("__")

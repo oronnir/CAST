@@ -67,7 +67,7 @@ class Classifier(torch.nn.Module):
         self.load_state_dict(filtered_dict, strict=False)
         
         
-class JustClassifier(Classifier):
+class SimplisticClassifier(Classifier):
     def __init__(self, num_classes, feature_planes):
-        super(JustClassifier, self).__init__(num_classes, feature_planes)
+        super(SimplisticClassifier, self).__init__(num_classes, feature_planes)
         self.features = lambda x: x

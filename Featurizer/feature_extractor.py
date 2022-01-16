@@ -62,7 +62,7 @@ class ImageFeaturizer(object):
 
         sampled_batches = self.load_data(
             path_images=path_images,
-            exts=exts,
+            extensions=exts,
             transforms=self.get_transforms(),
             batch_size=batch_size,
             num_workers=num_workers)
@@ -77,7 +77,8 @@ class ImageFeaturizer(object):
 
         return features, image_ids
 
-    def get_transforms(self):
+    @staticmethod
+    def get_transforms():
         """Transformations to be applied on images"""
         normalize = transforms.Normalize(
             mean=[0.485, 0.456, 0.406],
@@ -89,17 +90,20 @@ class ImageFeaturizer(object):
             transforms.ToTensor(),
             normalize])
 
-    def load_data(self, path_images, exts, transforms, batch_size, num_workers):
-        """Load the images, apply transformations and creates batches
-            Parameters:
-            path_images: str, path to folder containing images or path to single image
-            exts: valid extensions for an image file, default ['png', 'jpg']
-            batch_size', str, batch size, default 32
-            num_workers', str, number of multiprocessing workers to load the data, default 4
+    @staticmethod
+    def load_data(path_images, extensions, transforms, batch_size, num_workers):
+        """
+        Load the images, apply transformations and creates batches
+
+        Parameters:
+        :path_images: str, path to folder containing images or path to single image
+        :extensions: valid extensions for an image file, default ['png', 'jpg']
+        :batch_size', str, batch size, default 32
+        :num_workers', str, number of multiprocessing workers to load the data, default 4
         """
         feature_dataset = FeatureExtractionDataset(
             path_images=path_images,
-            exts=exts,
+            exts=extensions,
             transform=transforms,
         )
 
@@ -229,7 +233,6 @@ class TripletsDataset(Dataset):
         self.tsv_path = tsv_path
         self.row_order = ['anchor', 'positive', 'negative']
         self.transform = transform
-        # self.transform = TripletsDataset.pad
         self._data = TripletTsv(tsv_path)
 
     def __len__(self):

@@ -25,7 +25,6 @@ class AverageMeter(object):
 
 
 class TimeMeter:
-
     def __init__(self):
         self.batch_time = AverageMeter()
         self.data_time = AverageMeter()

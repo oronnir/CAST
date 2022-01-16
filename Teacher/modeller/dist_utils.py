@@ -2,7 +2,7 @@ import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel
 import os
 
-# adopted from https://github.com/diux-dev/imagenet18/blob/master/training/dist_utils.py
+# inspired by https://github.com/diux-dev/imagenet18/blob/master/training/dist_utils.py
 
 
 def reduce_tensor(tensor):
@@ -24,9 +24,9 @@ def env_rank():
 
 
 class DDP(DistributedDataParallel):
-    # Distributed wrapper. Supports asynchronous evaluation and model saving
+    """Distributed wrapper. Supports asynchronous evaluation and model saving"""
     def forward(self, *args, **kwargs):
-        # DDP has a sync point on forward. No need to do this for eval. This allows us to have different batch sizes
+        """DDP has a sync point on forward. No need to do this for eval. This allows us to have different batch sizes"""
         if self.training:
             return super(DDP, self).forward(*args, **kwargs)
         else:

@@ -8,7 +8,7 @@ import numpy as np
 import networkx as nx
 from EvaluationUtils.vision_metrics import CVMetrics
 from Tracker.flow_maximizer import FlowMaximizer
-from Animator.bbox_grouper_api import CharacterBoundingBox, CharacterDetectionOutput
+from Animator.consolidation_api import CharacterBoundingBox, CharacterDetectionOutput
 from Animator.utils import EPS, deserialize_pickle, serialize_pickle
 
 

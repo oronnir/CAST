@@ -1,7 +1,7 @@
 import cv2
 import json
 import numpy as np
-from Animator.bbox_grouper_api import CharacterDetectionOutput, CharacterGroupingOutput
+from Animator.consolidation_api import CharacterDetectionOutput, CharacterGroupingOutput
 from Detector.background_cropper import Range
 from datetime import timedelta
 from dateutil.parser import parse

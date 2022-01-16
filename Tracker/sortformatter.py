@@ -1,5 +1,5 @@
 import os
-from Animator.bbox_grouper_api import CharacterDetectionOutput
+from Animator.consolidation_api import CharacterDetectionOutput
 from Tracker.sort_wrapper import Detection
 
 

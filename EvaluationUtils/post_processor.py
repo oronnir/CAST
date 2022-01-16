@@ -5,11 +5,11 @@ from typing import Tuple
 import pandas as pd
 from EvaluationUtils.descriptive_stats import create_collage
 from Utils.union_find import UnionFind
-from Animator.bbox_grouper_api import CharacterDetectionOutput
+from Animator.consolidation_api import CharacterDetectionOutput
 import numpy as np
 from numpy import linalg as LA
 from collections import Counter
-from Animator.feature_clustering_session import GroupingEvaluator
+from Animator.cluster_logic import GroupingEvaluator
 import Animator.clustering_methods as cm
 from .detection_mapping import DetectionMapping
 from Animator.utils import recreate_dir, create_dir_if_not_exist

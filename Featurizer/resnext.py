@@ -1,10 +1,7 @@
-""" ResNext
-
-ResNeXt-50: (3,4,6,3)
-ResNeXt-101: (3,4,23,3)
-ResNeXt-152: (3,8,36,3)
-
-(Cardinality, bottleneck_width) = (1,64d), (2,40d), (4,24d), (8,14d), (32,4d)
+"""
+ResNeXt-50: (3, 4, 6, 3)
+ResNeXt-101: (3, 4, 23, 3)
+ResNeXt-152: (3, 8, 36, 3)
 """
 
 import torch

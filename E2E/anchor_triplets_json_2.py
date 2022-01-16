@@ -4,7 +4,7 @@ import json
 from tqdm import tqdm
 from shutil import copytree, rmtree, copyfile, make_archive
 from Teacher.utilizer.triplets_sampler import triplets_repo_name
-from Animator.bbox_grouper_api import CharacterDetectionOutput
+from Animator.consolidation_api import CharacterDetectionOutput
 from Animator.utils import create_dir_if_not_exist
 from E2E.main_1 import detection_file_name
 

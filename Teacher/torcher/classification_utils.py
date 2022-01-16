@@ -8,7 +8,7 @@ import wandb
 from torch.optim import lr_scheduler
 
 from Teacher.modeller.meters import AverageMeter
-from Teacher.torcher.sigmoid_cross_entropy_loss_with_balancing import SigmoidCrossEntropyLossWithBalancing
+from Teacher.torcher.cross_entropy_loss import SigmoidCrossEntropyLossWithBalancing
 
 
 def get_criterion(loss_type=False, multi_label_negative_sample_weights_file=None, cross_entropy_weights=None,

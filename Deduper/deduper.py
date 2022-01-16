@@ -2,7 +2,7 @@ import os
 import subprocess
 import networkx as nx
 import numpy as np
-from Animator.bbox_grouper_api import CharacterDetectionOutput
+from Animator.consolidation_api import CharacterDetectionOutput
 from scipy.sparse import csr_matrix
 from sklearn.metrics.pairwise import cosine_similarity
 from E2E.configuration_loader import Configuration

@@ -1,7 +1,7 @@
 from PIL import Image
 import numpy as np
 import pandas as pd
-from Animator.bbox_grouper_api import CharacterDetectionOutput
+from Animator.consolidation_api import CharacterDetectionOutput
 from sklearn.metrics import confusion_matrix
 from confusion_matrisizer import plot_cm
 import os

@@ -3,7 +3,7 @@ from torch.utils.data.distributed import DistributedSampler
 
 from Featurizer.feature_extractor import TripletsDataset
 from Teacher.modeller.dist_utils import env_world_size, env_rank
-from Teacher.torcher.augmentation import ClassifierTrainAugmentation
+from Teacher.torcher.augmentor import ClassifierTrainAugmentation
 
 
 WRAPPING = True

@@ -9,8 +9,8 @@ from termcolor import colored
 from Animator.utils import eprint, profiling, hash_values
 import Animator.normalization_methods as nm
 import Animator.clustering_methods as cm
-import Animator.bbox_grouper as bbg
-from Animator.feature_clustering_session import GroupingEvaluator
+import Animator.consolidator as bbg
+from Animator.cluster_logic import GroupingEvaluator
 
 
 # read configuration

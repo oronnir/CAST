@@ -1,5 +1,5 @@
 from CustomVisionWrapper.predict_ic import pred_classification_project
-from Animator.bbox_grouper_api import CharacterDetectionOutput
+from Animator.consolidation_api import CharacterDetectionOutput
 import os
 import shutil
 import time

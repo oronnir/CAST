@@ -3,7 +3,7 @@ import sys
 import pandas as pd
 
 from EvaluationUtils.post_processor import post_process_single_episode
-from Animator.bbox_grouper import bbox_grouper_main
+from Animator.consolidator import bbox_grouper_main
 
 
 def cluster_main():

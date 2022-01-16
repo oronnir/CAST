@@ -21,7 +21,7 @@ from typing import List
 from Featurizer.featurizer import Featurizer
 from Tracker.tracks import Triplet
 from Utils.gpu_profiler import nvidia_smi
-from Animator.bbox_grouper_api import CharacterDetectionOutput
+from Animator.consolidation_api import CharacterDetectionOutput
 from Animator.utils import create_dir_if_not_exist
 
 

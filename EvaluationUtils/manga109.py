@@ -1,4 +1,4 @@
-from Animator.bbox_grouper_api import BoundingBox, CharacterDetectionOutput, CharacterBoundingBox
+from Animator.consolidation_api import BoundingBox, CharacterDetectionOutput, CharacterBoundingBox
 from Animator.utils import eprint, to_json
 import xml.etree.cElementTree as etree
 from EvaluationUtils.vision_metrics import CVMetrics

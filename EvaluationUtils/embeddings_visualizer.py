@@ -1,4 +1,4 @@
-from Animator.bbox_grouper_api import CharacterDetectionOutput
+from Animator.consolidation_api import CharacterDetectionOutput
 import os
 from PIL import Image
 import numpy as np

@@ -73,6 +73,7 @@ def trace_ordered(values_dict):
 def grid_search(input_dir, train_model, hyper_parameters, stats_output):
     """
     Grid Search util method to go over all possible configurations and train a model
+    :param input_dir:
     :param stats_output: output file path with all statistics for all iterations stats aggregations
     :param train_model: model trainer method per hyper parameters configuration
     :param hyper_parameters: a list of tuples where the first element is the name of the hyper-parameter and the second

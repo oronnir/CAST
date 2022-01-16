@@ -5,7 +5,7 @@ from collections import OrderedDict
 
 from Tracker.shot_associator import ShotAssociator
 from Tracker.tracks_data import ShotMotAssignment, FrameDetections
-from Animator.bbox_grouper_api import CharacterDetectionOutput
+from Animator.consolidation_api import CharacterDetectionOutput
 from Animator.utils import serialize_pickle, deserialize_pickle
 
 

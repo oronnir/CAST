@@ -5,7 +5,7 @@ from copy import deepcopy
 from typing import List
 
 from EvaluationUtils.vision_metrics import CVMetrics
-from Animator.bbox_grouper_api import CharacterBoundingBox
+from Animator.consolidation_api import CharacterBoundingBox
 from Animator.utils import serialize_pickle, deserialize_pickle
 
 seed(1234567)

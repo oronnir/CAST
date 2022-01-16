@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from Animator.bbox_grouper_api import CharacterDetectionOutput
+from Animator.consolidation_api import CharacterDetectionOutput
 from Animator.utils import create_dir_if_not_exist, try_zip_folder
 
 det_json_name = 'animationdetectionoutput.json'
