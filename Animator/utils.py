@@ -14,7 +14,7 @@ import numpy as np
 from PIL import Image
 import cv2
 from sklearn.model_selection import ParameterGrid
-from collections import Iterable, OrderedDict, defaultdict
+from collections import Iterable, OrderedDict
 import termcolor
 import re
 import copy

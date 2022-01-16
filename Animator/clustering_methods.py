@@ -143,9 +143,9 @@ def c_dbscan(x, k, frame_ids=None, tube_ids=None, eps_span=13.0, initial_eps=5.0
     return best_clusters, cluster_centers
 
 
-def fast_cosine_distance(X):
+def fast_cosine_distance(x):
     # base similarity matrix (all dot products)
-    similarity = np.dot(X, X.T)
+    similarity = np.dot(x, x.T)
 
     # squared magnitude of preference vectors (number of occurrences)
     square_mag = np.diag(similarity)
