@@ -4,14 +4,17 @@ from copy import deepcopy
 
 import numpy as np
 
-from Animator.clustering_methods import k_means, c_dbscan, c_optics
+from Animator.clustering_methods import c_dbscan, c_optics
 from Animator.cluster_logic import CharacterConsolidator
 from Animator.cluster_logic import ConsolidationEvaluator
 
 
 def my_simple_clustering(ids, features, frame_ids):
     """
-    Binary search for the right eps parameter by DBSCAN
+    Binary search for the right eps parameter by DBSCAN.
+
+    Note: The name of the method does not imply its simplicity. But, it works.
+
     :param ids: the box ids
     :param features: the feature vector per box
     :param frame_ids: the frame ids/indices
@@ -43,7 +46,7 @@ def my_simple_clustering(ids, features, frame_ids):
         try:
             cluster_ids, cluster_centers = c_dbscan(features, k, frame_ids, ids, eps_span=15, initial_eps=1e-3)
             silhouette, percentage_noise = ConsolidationEvaluator.unsupervised_evaluate_clusters(features, cluster_ids,
-                                                                                            'c_dbscan')
+                                                                                                 'c_dbscan')
             p_noise = percentage_noise/100
             validity_and_silhouette_score = silhouette*(1-p_noise)
             score_per_k.append({'k': k, 'silhouette': silhouette, 'p_noise': p_noise,
@@ -100,71 +103,6 @@ def get_cluster_centers_thumbnail_id(ids, features, cluster_predictions, cluster
             id_to_cluster_label[bbox_id] = cluster_id
 
     return best_thumbnails
-
-
-def re_cluster_large_clusters(features, ids, cluster_ids, cluster_centers, max_cluster_size):
-    """re-cluster the large clusters which holds more than max_cluster_size samples"""
-    original_order = np.asarray(range(len(ids)))
-    next_available_cluster_id = max(cluster_ids) + 1
-    id_to_cluster = {
-        cid: {
-            'Features': features[cluster_ids == cid, :],
-            'BboxIds': ids[cluster_ids == cid],
-            'ClusterCenter': cluster_centers[cid],
-            'OriginalOrder': original_order[cluster_ids == cid],
-            'ClusterId': cid
-        }
-        for cid in set(cluster_ids)
-    }
-
-    cloned_id_to_cluster = deepcopy(id_to_cluster)
-    for cluster_id, _ in id_to_cluster.items():
-        cluster_meta = id_to_cluster[cluster_id]
-
-        # ignore noise
-        if cluster_id < 0:
-            continue
-
-        # skip the valid clusters
-        cluster_size = cluster_meta['Features'].shape[0]
-        if cluster_size <= max_cluster_size:
-            continue
-
-        # re-cluster
-        k_new = max(2, 1 + int(cluster_size/50))
-        internal_cluster_ids, internal_cluster_centers = k_means(cluster_meta['Features'], k_new)
-
-        # reassign cluster ids
-        original_internal_cluster_ids = set(internal_cluster_ids)
-        for internal_cluster_id in original_internal_cluster_ids:
-            cloned_id_to_cluster[next_available_cluster_id] = {
-                'Features': cluster_meta['Features'][internal_cluster_ids == internal_cluster_id, :],
-                'BboxIds': cluster_meta['BboxIds'][internal_cluster_ids == internal_cluster_id],
-                'ClusterCenter': internal_cluster_centers[internal_cluster_id],
-                'OriginalOrder': cluster_meta['OriginalOrder'][internal_cluster_ids == internal_cluster_id],
-                'ClusterId': next_available_cluster_id
-            }
-
-            next_available_cluster_id += 1
-        next_available_cluster_id -= 1
-        cloned_id_to_cluster[cluster_id] = cloned_id_to_cluster[next_available_cluster_id]
-        cloned_id_to_cluster[cluster_id]['ClusterId'] = cluster_id
-        cloned_id_to_cluster.pop(next_available_cluster_id)
-
-    id_to_cluster = cloned_id_to_cluster
-
-    cluster_ids_and_original_order = []
-    for cluster in id_to_cluster.values():
-        for bbox in cluster['OriginalOrder']:
-            cluster_ids_and_original_order.append((cluster['ClusterId'], bbox))
-    ordered_cluster_ids_by_original = sorted(cluster_ids_and_original_order, key=lambda t: t[1])
-    cluster_ids = np.asarray([ocibo[0] for ocibo in ordered_cluster_ids_by_original])
-    ordered_cluster_centers_by_cluster_id = [clust['ClusterCenter'] for clust in
-                                             sorted([c for c in id_to_cluster.values()
-                                                     if c['ClusterId'] >= 0], key=lambda t: t['ClusterId'])]
-    cluster_centers = np.asarray(ordered_cluster_centers_by_cluster_id)
-    print('re_cluster has finished with {} clusters'.format(len([k for k in id_to_cluster.keys() if k >= 0])))
-    return cluster_ids, cluster_centers
 
 
 def re_cluster_noisy_samples(features, ids, cluster_ids, cluster_centers, frame_ids):

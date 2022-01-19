@@ -9,11 +9,13 @@ class EntityGraph(object):
     def __init__(self):
         self.nx_graph = nx.Graph()
 
-    def build_graph_entities(self, entities, entities_frequencies, keep_edge_percentage, x=None, similarity_matrix=None):
+    def build_graph_entities(self, entities, entities_frequencies, keep_edge_percentage, x=None,
+                             similarity_matrix=None):
         """ builds an entity graph given the similarity matrix and entities """
         # add categories nodes and edges
         if x is None and similarity_matrix is None or x is not None and similarity_matrix is not None:
-            raise Exception('Argument exception - build_graph_entities in Modularity Maximization - should provide either X or sim(X).')
+            raise Exception('Argument exception - build_graph_entities in Modularity Maximization -'
+                            ' should provide either X or sim(X).')
 
         nodes = set()
 

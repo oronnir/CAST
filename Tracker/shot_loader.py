@@ -1,8 +1,7 @@
 import cv2
 import json
 import numpy as np
-from Animator.consolidation_api import CharacterDetectionOutput, CharacterConsolidationOutput
-from Detector.background_cropper import Range
+from Animator.consolidation_api import CharacterDetectionOutput
 from datetime import timedelta
 from dateutil.parser import parse
 from Detector.detector_wrapper import DetectorWrapper
@@ -176,6 +175,54 @@ class ShotsLoader:
                 'adjustedEnd': end.__str__(),
                 'start': start.__str__(),
                 'end': end.__str__()}
+
+
+class Range(object):
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+
+    def __repr__(self):
+        return 'Range({}, {})'.format(self.start, self.end)
+
+    def is_valid(self):
+        return self.end > self.start
+
+    def is_conjunct(self, other, left_inclusive=True, right_inclusive=True):
+        if other is None:
+            return False
+
+        return (self.start < other.end or (left_inclusive and self.start == other.end)) and \
+               (self.end > other.start or (right_inclusive and self.end == other.start))
+
+    def except_conjunct(self, other):
+        """ return the segments in self that are not in other """
+        # case they are foreign
+        if not self.is_conjunct(other):
+            return [self]
+
+        # other contain self
+        if self.start >= other.start and self.end <= other.end:
+            return []
+
+        # partial conjunction - self starts first
+        if self.start < other.start and self.end < other.end:
+            return [Range(self.start, other.start)]
+
+        # partial conjunction - other starts first
+        if self.start > other.start and self.end > other.end:
+            return [Range(other.end, self.end)]
+
+        # other is contained in self so we got two segments
+        return [Range(self.start, other.start), Range(other.end, self.end)]
+
+    def conjunct(self, other):
+        if not self.is_conjunct(other):
+            return Range(0, 0)
+        else:
+            start = max(self.start, other.start)
+            end = min(self.end, other.end)
+            return Range(start, end)
 
 
 if __name__ == '__main__':

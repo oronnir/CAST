@@ -1,9 +1,5 @@
 import numpy as np
 from sklearn import metrics
-from sklearn.cluster import KMeans
-from sklearn.linear_model import LassoLarsIC
-from sklearn.manifold import TSNE
-from sklearn.mixture import GaussianMixture
 
 
 def silhouette_score(x, labels_pred):
@@ -28,6 +24,7 @@ def purity(y_true, y_pred):
 
 
 def clustering_accuracy(y_true, y_pred):
+    """The clustering TP rate"""
     # compute contingency matrix (also called confusion matrix)
     contingency_matrix = metrics.cluster.contingency_matrix(y_true, y_pred)
     most_likely_assignment = np.amax(contingency_matrix, axis=0)
@@ -37,6 +34,7 @@ def clustering_accuracy(y_true, y_pred):
 
 
 def itzi_k(y_true, y_pred):
+    """The geometric mean of the clustering precision and recall"""
     # compute contingency matrix (also called confusion matrix)
     contingency_matrix = metrics.cluster.contingency_matrix(y_true, y_pred)
     n = y_true.shape[0]
@@ -50,6 +48,7 @@ def itzi_k(y_true, y_pred):
 
 
 def f_score(y_true, y_pred):
+    """The harmonic mean of the clustering precision and recall"""
     # compute contingency matrix (also called confusion matrix)
     contingency_matrix = metrics.cluster.contingency_matrix(y_true, y_pred)
     n = y_true.shape[0]

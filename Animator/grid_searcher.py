@@ -27,7 +27,7 @@ def train_model(input_dir, hyper_params_permutation, iteration_n):
     os.mkdir(iteration_dir_path)
 
     # run full batch
-    batch_stats = batch_grouper.group_bboxes_batch(input_dir, iteration_dir_path, hyper_params_permutation)
+    batch_stats = batch_consolidator.consolidate_boxes_batch(input_dir, iteration_dir_path, hyper_params_permutation)
 
     # collect batch stats
     batch_stats['hyper_params'] = json.dumps({k: v.__name__ if callable(v) else v

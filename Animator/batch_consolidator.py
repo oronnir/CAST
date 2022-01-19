@@ -62,7 +62,7 @@ def create_clustering_visualizations(clustering_visualization_folder_path, bboxe
           '%%%%%%%%%%%%%%%%%')
 
 
-def validate_best_face(bboxes_groups):
+def validate_best_exemplar(bboxes_groups):
     cluster_ids = set([cid.ClusterId for cid in bboxes_groups])
     for cid in cluster_ids:
         if cid < 0:
@@ -95,7 +95,7 @@ def create_clusters_visualization(video_output_folder, video_name, bboxes_groups
     return
 
 
-def group_bboxes_batch(input_folder, output_path, hyper_parameters):
+def consolidate_boxes_batch(input_folder, output_path, hyper_parameters):
     # get hyper parameters
     clustering_function = hyper_parameters['clustering_method']
     normalization_method = hyper_parameters['normalization_method']
@@ -152,7 +152,7 @@ def group_bboxes_batch(input_folder, output_path, hyper_parameters):
         create_clusters_visualization(video_output_folder, video_name, bboxes_groups, detected_bboxes)
 
         # validate a single best thumbnail per cluster
-        validate_best_face(bboxes_groups)
+        validate_best_exemplar(bboxes_groups)
 
         # filter the unlabeled bounding boxes
         labeled_thumbnail_ids = {detected_bbox.ThumbnailId for detected_bbox in detected_bboxes.CharacterBoundingBoxes if detected_bbox.IsLabeled}
@@ -264,7 +264,7 @@ def main():
                         min_cluster_significance=str(0),
                         keep_cluster_percentile=str(0))
 
-    group_bboxes_batch(input_folder, output_folder, hyper_params)
+    consolidate_boxes_batch(input_folder, output_folder, hyper_params)
     print("End batch analysis")
     return
 
