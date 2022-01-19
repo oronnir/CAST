@@ -1,6 +1,6 @@
 # CAST: Character labeling in Animation using Self-supervision by Tracking 
 ## (Published as a conference paper at EuroGraphics 2022)
-###The CAST paper code, evaluation dataset, and models are to be stored here soon.
+Note: The CAST paper code, evaluation dataset, and models are to be stored here soon.
 Authors: Oron Nir, Gal Rapoport, and Ariel Shamir
 All technical details are available on [the paper](https://www.youtube.com/watch?v=dQw4w9WgXcQ) and [the demo video](https://www.youtube.com/watch?v=dQw4w9WgXcQ).
 
