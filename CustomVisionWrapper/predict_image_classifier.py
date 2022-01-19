@@ -11,7 +11,6 @@ from sklearn.metrics import average_precision_score, confusion_matrix
 from sklearn.metrics import precision_recall_curve
 from Animator.utils import eprint, recreate_dir
 from EvaluationUtils.confusion_matrisizer import plot_cm
-from sklearn.utils.extmath import softmax
 
 
 # triplets

@@ -1,4 +1,5 @@
-""" Create a new Image Classification project
+"""
+Create a new Image Classification project
 
 two folder, one train, one test,
 each folder have sub-folder grouped by tag
