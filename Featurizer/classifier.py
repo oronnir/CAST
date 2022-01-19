@@ -10,8 +10,7 @@ class Classifier(torch.nn.Module):
         if isinstance(num_classes, int):
             num_classes = (num_classes,)
         self.num_classes = num_classes
-
-        self.features = None # Need to be initialized by a child class.
+        self.features = None  # Need to be initialized by a child class.
         self.fcs = torch.nn.ModuleList([torch.nn.Linear(feature_planes, c) for c in num_classes])
 
         self.outputs = []
