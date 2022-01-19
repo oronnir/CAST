@@ -5,6 +5,10 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 
+"""
+Using the Tensorboard Projector to visualize an image cloud
+"""
+
 
 def project_single_repo(repo, characters, name_to_cluster, name_to_series):
     series_name = os.path.basename(repo).split('_')[0]

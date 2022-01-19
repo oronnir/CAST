@@ -16,7 +16,7 @@ from Animator.utils import recreate_dir, create_dir_if_not_exist
 from sklearn.metrics.pairwise import cosine_similarity
 
 
-class MockCharacterGrouper(object):
+class MockCharacterConsolidator(object):
     def __init__(self, detected_bboxes, min_cluster_significance, keep_cluster_percentile, min_cluster_size,
                  dbscan_cluster_labels):
         """Sets the file names for data on entities"""
@@ -71,7 +71,7 @@ class MockCharacterGrouper(object):
 
         # get and merge the potential over-segmented clusters
         cluster_ids_to_merge, _ = self.should_consolidate_clusters(cluster_labels)
-        cluster_labels, actual_best_k = MockCharacterGrouper.merge_clusters(cluster_ids_to_merge, cluster_labels)
+        cluster_labels, actual_best_k = MockCharacterConsolidator.merge_clusters(cluster_ids_to_merge, cluster_labels)
 
         # re-assign best thumbnail
         best_bbox_ids, cluster_significance, id_to_cluster_label, id_to_sample_significance, cluster_centers = \
@@ -274,7 +274,7 @@ class MockCharacterGrouper(object):
         return np.asarray(new_cluster_labels), best_bbox_ids, actual_best_k
 
     def should_consolidate_clusters(self, cluster_predictions):
-        """compute the clusters similarity for post-processing merge"""
+        """compute the cluster's similarity for post-processing merge"""
         valid_clusters = sorted(cid for cid in set(cluster_predictions) if cid >= 0)
         n = len(valid_clusters)
         if n <= 1:
@@ -351,7 +351,6 @@ def largest_indices(ary, n):
 
 def post_process_single_episode(eval_root, ser, role):
     _min_cluster_sig = 0.725
-    # _keep_cluster_percentile = .95
     _keep_cluster_percentile = .975
     _min_cluster_size = 3
     ser_path = os.path.join(eval_root, '', ser)
@@ -377,8 +376,8 @@ def post_process_single_episode(eval_root, ser, role):
                                  for d in character_detections.CharacterBoundingBoxes if d.Id in id_to_group])
     k_recluster = len(set([c for c in cluster_labels if c >= 0]))
     print('DBSCAN k={}'.format(k_recluster))
-    mock_grouper = MockCharacterGrouper(character_detections.CharacterBoundingBoxes, _min_cluster_sig,
-                                        _keep_cluster_percentile, _min_cluster_size, cluster_labels)
+    mock_grouper = MockCharacterConsolidator(character_detections.CharacterBoundingBoxes, _min_cluster_sig,
+                                             _keep_cluster_percentile, _min_cluster_size, cluster_labels)
     ids, cluster_labels, final_k, best_bbox_ids, _cluster_significance, _id_to_sample_significance = \
         mock_grouper.post_process_cluster_significance
     id_to_cluster_label = dict(zip(ids, cluster_labels))

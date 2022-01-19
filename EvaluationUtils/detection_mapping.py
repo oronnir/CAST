@@ -61,20 +61,20 @@ class DetectionMapping:
         return None
 
     @staticmethod
-    def read_grouping_output_json(json_path):
+    def read_consolidation_output_json(json_path):
         if os.path.isfile(json_path):
             try:
                 with open(json_path, "r") as text_file:
-                    grouping_json_dict = json.load(text_file)
+                    consolidation_json_dict = json.load(text_file)
 
                 # make bbox Ids and names zero-based
-                zero_based_groups = []
-                for bbox in grouping_json_dict['BoundingBoxesGroups']:
+                zero_based_consolidations = []
+                for bbox in consolidation_json_dict['BoundingBoxesGroups']:
                     bbox['Id'] -= 1
                     bbox['BboxName'] -= 1
-                    zero_based_groups.append(bbox)
+                    zero_based_consolidations.append(bbox)
 
-                bbox_id_to_group = {bbox['ThumbnailId']:  bbox for bbox in zero_based_groups}
+                bbox_id_to_group = {bbox['ThumbnailId']:  bbox for bbox in zero_based_consolidations}
                 return bbox_id_to_group
             except Exception as e:
                 traceback.print_exc()
@@ -87,7 +87,7 @@ class DetectionMapping:
                 not os.path.isfile(grouping_output):
             return None
 
-        groups_mappings = DetectionMapping.read_grouping_output_json(grouping_output)
+        groups_mappings = DetectionMapping.read_consolidation_output_json(grouping_output)
         detection_mappings = DetectionMapping.read_detection_output_json(detection_output, groups_mappings)
         return detection_mappings
 

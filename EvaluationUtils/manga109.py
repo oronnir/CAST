@@ -11,6 +11,10 @@ import random
 import traceback
 import json
 
+"""
+Note: This was an attempt to compare Video animation with prior art on Manga109 which are comic books of a very different 
+style in black and white colors. It gave us some insights but no solid findings. 
+"""
 
 seed = 1234567
 random.seed(seed)
@@ -325,11 +329,11 @@ def sample_frames_and_draw_bboxes_single_book(original_frames_repo, detections_j
             frame_pool[bbox.KeyframeThumbnailId] = [bbox]
 
     # enumerate and draw
-    for frame_name_no_extention, frame_bboxes in frame_pool.items():
-        frame_file_name = f'{frame_name_no_extention}.jpg'
+    for frame_name_no_extension, frame_bboxes in frame_pool.items():
+        frame_file_name = f'{frame_name_no_extension}.jpg'
         input_frame_path = os.path.join(original_frames_repo, frame_file_name)
         frame_visualization_path = os.path.join(output_visualization_repo, frame_file_name)
-        frame_fns = fn_gt.get(str(int(frame_name_no_extention)), None)
+        frame_fns = fn_gt.get(str(int(frame_name_no_extension)), None)
         draw_frame_with_bboxes_and_labels(input_frame_path, frame_bboxes, frame_fns, frame_visualization_path)
 
     return
@@ -380,7 +384,7 @@ def run_grouper_multiple():
         book_detections_path = os.path.join(root_dir, book_name, 'Detections', 'animationdetectionoutput.json')
 
 
-if __name__ == '__main__':
+def main():
     minimum_intersection_over_union = 0.5
     min_conf = 0.3
     begin_end_frame = 5
@@ -400,3 +404,7 @@ if __name__ == '__main__':
             rmtree(current_json_repo_path)
         os.mkdir(current_json_repo_path)
         copyfile(source_file_path, detections_path)
+
+
+if __name__ == '__main__':
+    main()

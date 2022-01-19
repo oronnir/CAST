@@ -55,7 +55,7 @@ def non_max_suppression(detects, classes, exceptions=None):
     return frame_to_boxes
 
 
-if __name__ == '__main__':
+def main():
     # keys
     ser_path = r"\..\Floogals\HighResFrames\Detections\animationdetectionoriginalimages"
     output_ser = r"\..\Floogals\HighResFrames\Detections\classificationOutput"
@@ -144,8 +144,12 @@ if __name__ == '__main__':
             character_name = thumbnail_to_classification[detection.ThumbnailId]
             character_color = character_to_color[character_name]
             point1 = (detection.Rect.X, detection.Rect.Y)
-            point2 = (detection.Rect.X+detection.Rect.Width, detection.Rect.Y+detection.Rect.Height)
+            point2 = (detection.Rect.X + detection.Rect.Width, detection.Rect.Y + detection.Rect.Height)
             cv2.rectangle(img, point1, point2, character_color, line_width)
-            cv2.putText(img, character_name, (detection.Rect.X+2, detection.Rect.Y + detection.Rect.Height-2),
+            cv2.putText(img, character_name, (detection.Rect.X + 2, detection.Rect.Y + detection.Rect.Height - 2),
                         cv2.FONT_HERSHEY_SIMPLEX, 1, character_color, 2, cv2.LINE_AA)
         cv2.imwrite(target, img)
+
+
+if __name__ == '__main__':
+    main()

@@ -1,7 +1,6 @@
 import numpy as np
 from numpy import dot
 from numpy.linalg import norm
-import copy
 
 
 class CVMetrics:
@@ -30,26 +29,6 @@ class CVMetrics:
         union_area = box_a.area() + box_b.area() - intersection_area
         iou = float(intersection_area) / union_area
         return iou
-
-    @staticmethod
-    def nms(boxes, suppression_th=0.25):
-        """apply a non-max suppression on a list of detections with max confidence"""
-        num_boxes = len(boxes)
-        suppressed = []
-        main_boxes = copy.deepcopy(boxes)
-        for b1 in range(num_boxes):
-            for b2 in range(b1+1, num_boxes):
-                iou = CVMetrics.bb_intersection_over_union(boxes[b1].Rect, boxes[b2].Rect)
-                if iou <= suppression_th:
-                    continue
-
-                if boxes[b1].Confidence > boxes[b2].Confidence:
-                    suppressed.append((boxes[b2], iou))
-                    main_boxes = list(filter(lambda b: b.Id != boxes[b2].Id, main_boxes))
-                else:
-                    suppressed.append((boxes[b1], iou))
-                    main_boxes = list(filter(lambda b: b.Id != boxes[b1].Id, main_boxes))
-        return main_boxes, suppressed
 
     @staticmethod
     def matching_bbox_sets(bbox_arr_a, bbox_arr_b, min_iou):
