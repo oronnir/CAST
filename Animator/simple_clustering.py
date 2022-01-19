@@ -5,8 +5,8 @@ from copy import deepcopy
 import numpy as np
 
 from Animator.clustering_methods import k_means, c_dbscan, c_optics
-from Animator.cluster_logic import CharacterGrouper
-from Animator.cluster_logic import GroupingEvaluator
+from Animator.cluster_logic import CharacterConsolidator
+from Animator.cluster_logic import ConsolidationEvaluator
 
 
 def my_simple_clustering(ids, features, frame_ids):
@@ -42,7 +42,7 @@ def my_simple_clustering(ids, features, frame_ids):
     for k in range(k_estimate_lb, k_estimate_ub):
         try:
             cluster_ids, cluster_centers = c_dbscan(features, k, frame_ids, ids, eps_span=15, initial_eps=1e-3)
-            silhouette, percentage_noise = GroupingEvaluator.unsupervised_evaluate_clusters(features, cluster_ids,
+            silhouette, percentage_noise = ConsolidationEvaluator.unsupervised_evaluate_clusters(features, cluster_ids,
                                                                                             'c_dbscan')
             p_noise = percentage_noise/100
             validity_and_silhouette_score = silhouette*(1-p_noise)
@@ -69,7 +69,7 @@ def my_simple_clustering(ids, features, frame_ids):
     print(f'The k search full log is:{os.linesep}{os.linesep.join([str(elem) for elem in score_per_k])}')
 
     cluster_ids, cluster_centers = re_cluster_noisy_samples(features, ids, cluster_ids, cluster_centers, frame_ids)
-    GroupingEvaluator.unsupervised_evaluate_clusters(features, cluster_ids, 'OPTICS re-cluster')
+    ConsolidationEvaluator.unsupervised_evaluate_clusters(features, cluster_ids, 'OPTICS re-cluster')
 
     best_thumbnails = get_cluster_centers_thumbnail_id(ids, features, cluster_ids, cluster_centers)
     actual_k_recluster = len(set([cid for cid in cluster_ids if cid >= 0]))
@@ -92,7 +92,7 @@ def get_cluster_centers_thumbnail_id(ids, features, cluster_predictions, cluster
                 else cluster_centers[cluster_id]
 
             # calculate cluster significance
-            distance_from_center, closest_to_center_idx = CharacterGrouper.calculate_distances_from_cluster_center(
+            distance_from_center, closest_to_center_idx = CharacterConsolidator.calculate_distances_from_cluster_center(
                 current_cluster_center, cluster_size, current_cluster_elements)
             best_thumbnails.append(current_cluster_bbox_ids[closest_to_center_idx])
 

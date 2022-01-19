@@ -3,7 +3,7 @@ import sys
 import pandas as pd
 
 from EvaluationUtils.post_processor import post_process_single_episode
-from Animator.consolidator import bbox_grouper_main
+from Animator.consolidator import box_consolidator_main
 
 
 def cluster_main():
@@ -29,7 +29,7 @@ def cluster_main():
 
             # run grouper
             sys.argv = [__file__, '-i', input_path, '-o', output_path]
-            bbox_grouper_main()
+            box_consolidator_main()
 
             # run post processor
             pred_row = post_process_single_episode(dataset_path, ser, role)

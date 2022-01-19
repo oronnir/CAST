@@ -10,23 +10,47 @@ import matplotlib.pyplot as plt
 
 class FlowMaximizer:
     """
-    Finds the max-flow in a network using the EK algorithm
+    Finds the max-flow in a network using the Edmonds-Karp algorithm or max-flow-min-cost using our Linear Programming
+    implementation.
+
+    Implemented algorithms:
+    1. Edmonds-Karp
+    2. BFS
+    3. NetworkX flow optimization (max_flow_min_cost)
+    4. Our (CAST) LP implementation (max_flow_lp_edges) inspired by Zhang et al. CVPR 2008
 
     Example:
             print("Edmonds-Karp algorithm")
             # make a capacity graph
             # node                    s  o  p  q  r  t
-            capacities = np.asarray([[0, 3, 3, 0, 0, 0],  # s
-                                     [0, 0, 2, 3, 0, 0],  # o
+            capacities = dok_matrix([[0, 3, 3, 0, 0, 0],  # s
+                                     [0, 0, 2, 3, 0, 1],  # o
                                      [0, 0, 0, 0, 2, 0],  # p
                                      [0, 0, 0, 0, 4, 2],  # q
                                      [0, 0, 0, 0, 0, 2],  # r
                                      [0, 0, 0, 0, 0, 0]])  # t
 
-            source = 0
-            sink = 5
-            max_flow_value, flow_function = FlowMaximizer.max_flow(capacities, source, sink)
-            print(f"max_flow_value is: {max_flow_value}\nThe flow is:\n{flow_function}")
+            source_v = 0
+            sink_v = 5
+            max_flow_value, flow_function = FlowMaximizer.max_flow_ek(capacities, source_v, sink_v)
+            print(f"EK: max_flow_value is: {max_flow_value}\nThe flow is:\n{flow_function}")
+            print('\n***\n')
+
+            print('LP Simplex for max flow')
+            total_cost, flow_list, flow_mat = FlowMaximizer.max_flow_lp_edges(capacities)
+            print(f"LP: max_flow_value is: {total_cost}\nThe flow is:\n{flow_mat.toarray()}")
+            print('\n***\n')
+
+            print('LP Simplex for weighted max flow')
+            flow_costs = dok_matrix([[0, 1, 10, 0, 0, 0],  # s
+                                     [0, 0, 1, 1, 0, 1],  # o
+                                     [0, 0, 0, 0, 1, 0],  # p
+                                     [0, 0, 0, 0, 1, 1],  # q
+                                     [0, 0, 0, 0, 0, 1],  # r
+                                     [0, 0, 0, 0, 0, 0]])  # t
+
+            w_total_cost, w_flow_list, w_flow_mat = FlowMaximizer.max_flow_lp_edges(capacities, weights=flow_costs)
+            print(f"LP: weighted_max_flow_value is: {w_total_cost}\nThe flow is:\n{w_flow_mat.toarray()}")
     """
 
     def __init__(self):
@@ -133,7 +157,7 @@ class FlowMaximizer:
         # convert from maximization to minimization according to weights (in C)
         res = linprog(c.flatten(), A_eq=A, b_eq=b, bounds=bounds, options={'maxiter': 500, 'sparse': True})
 
-        # post processing
+        # post-processing
         z = -res.fun if weights is None else res.fun
         x_ints = res.x.round(decimals=3)
         if res.status != 0:
@@ -184,38 +208,3 @@ class FlowMaximizer:
                         return paths[v]
                     queue.append(v)
         return None
-
-
-# if __name__ == '__main__':
-#     print("Edmonds-Karp algorithm")
-#     # make a capacity graph
-#     # node                    s  o  p  q  r  t
-#     capacities = dok_matrix([[0, 3, 3, 0, 0, 0],  # s
-#                              [0, 0, 2, 3, 0, 1],  # o
-#                              [0, 0, 0, 0, 2, 0],  # p
-#                              [0, 0, 0, 0, 4, 2],  # q
-#                              [0, 0, 0, 0, 0, 2],  # r
-#                              [0, 0, 0, 0, 0, 0]])  # t
-#
-#     source_v = 0
-#     sink_v = 5
-#     max_flow_value, flow_function = FlowMaximizer.max_flow_ek(capacities, source_v, sink_v)
-#     print(f"EK: max_flow_value is: {max_flow_value}\nThe flow is:\n{flow_function}")
-#     print('\n***\n')
-#
-#     print('LP Simplex for max flow')
-#     total_cost, flow_list, flow_mat = FlowMaximizer.max_flow_lp_edges(capacities)
-#     print(f"LP: max_flow_value is: {total_cost}\nThe flow is:\n{flow_mat.toarray()}")
-#     print('\n***\n')
-#
-#     print('LP Simplex for weighted max flow')
-#     flow_costs = dok_matrix([[0, 1, 10, 0, 0, 0],  # s
-#                              [0, 0, 1, 1, 0, 1],  # o
-#                              [0, 0, 0, 0, 1, 0],  # p
-#                              [0, 0, 0, 0, 1, 1],  # q
-#                              [0, 0, 0, 0, 0, 1],  # r
-#                              [0, 0, 0, 0, 0, 0]])  # t
-#
-#     w_total_cost, w_flow_list, w_flow_mat = FlowMaximizer.max_flow_lp_edges(capacities, weights=flow_costs)
-#     print(f"LP: weighted_max_flow_value is: {w_total_cost}\nThe flow is:\n{w_flow_mat.toarray()}")
-#     stop = 1

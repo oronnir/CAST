@@ -83,16 +83,10 @@ class CharacterDetectionOutput(_AttributeHolder):
         kf_id_to_index = dict()
         box_in_frame = 0
 
-        # id_counter = 1
-
         # chronological order
         sorted_boxes = [CharacterBoundingBox(box) for box in sorted(character_bounding_boxes['characterBoundingBoxes'],
                                                                     key=lambda x: [x['keyframeThumbnailId'], x['id']])]
         for box in sorted_boxes:
-            # if current_box.Id == 0:
-            #     current_box.Id = id_counter
-            #     id_counter += 1
-
             # update keyframe index
             if box.KeyframeThumbnailId in kf_id_to_index:
                 box.KeyFrameIndex = kf_id_to_index[box.KeyframeThumbnailId]
@@ -135,7 +129,7 @@ class CharacterDetectionOutput(_AttributeHolder):
         to_json(self_clone, json_path)
         return
 
-    def group_by_keyframes(self):
+    def consolidate_by_keyframes(self):
         """
         index the detections w.r.t. their keyframes
         :return: the dictionary index
@@ -148,7 +142,7 @@ class CharacterDetectionOutput(_AttributeHolder):
 
 
 # Output objects
-class CharacterGroupingOutput(_AttributeHolder):
+class CharacterConsolidationOutput(_AttributeHolder):
     """
     The clustering output object
     """
@@ -170,7 +164,7 @@ class BackgroundNegativeExample(_AttributeHolder):
         return dict(KeyframeId=self.KeyframeId, BoundingBox=self.BoundingBox.__dict__)
 
 
-class GroupBoundingBox(_AttributeHolder):
+class ConsolidationBoundingBox(_AttributeHolder):
     def __init__(self, bbox_id, cluster_id, is_best):
         self.Id = bbox_id
         self.ClusterId = cluster_id

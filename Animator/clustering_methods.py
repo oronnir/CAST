@@ -14,8 +14,8 @@ from Animator.modularity_maximizer import EntityGraph
 from numpy import linalg as LA
 
 
-def c_optics(X, k, frame_ids, tube_ids=None):
-    distances = fast_cosine_distance(X)
+def c_optics(x, k, frame_ids, tube_ids=None):
+    distances = fast_cosine_distance(x)
     same_frame = fast_mask(frame_ids)
     same_tube = fast_mask(tube_ids) if tube_ids is not None else 0
     constrained_pairwise_distances = distances + same_frame - same_tube
@@ -23,57 +23,8 @@ def c_optics(X, k, frame_ids, tube_ids=None):
         .fit(constrained_pairwise_distances)
 
     # find centers
-    cluster_centers, best_ids = get_cluster_centers(X, clustering_obj.labels_)
+    cluster_centers, best_ids = get_cluster_centers(x, clustering_obj.labels_)
     return clustering_obj.labels_, cluster_centers
-
-
-def estimate_eps_with_knn(precomputed_distances: np.ndarray) -> float:
-    """
-    Note: The following method under performs on the animation data...
-
-    estimate the best epsilon parameter for DBSCAN using the K Nearest Neighbor Algorithm.
-    Based on the following paper:
-    @inproceedings{rahmah2016determination,
-  title={Determination of optimal epsilon (eps) value on dbscan algorithm to clustering data on peatland hotspots in
-  sumatra},
-  author={Rahmah, Nadia and Sitanggang, Imas Sukaesih},
-  booktitle={IOP conference series: earth and environmental science},
-  volume={31},
-  number={1},
-  pages={012012},
-  year={2016},
-  organization={IOP Publishing}
-}
-
-    :param precomputed_distances: The precomputed distances
-    :return: The optimal epsilon for DBSCAN
-    """
-    from sklearn.neighbors import NearestNeighbors
-    from matplotlib import pyplot as plt
-    import seaborn as sns
-    sns.set()
-
-    knn = NearestNeighbors(n_neighbors=2, metric='precomputed')
-    nearest_neighbors_fitted = knn.fit(precomputed_distances)
-    distances, indices = nearest_neighbors_fitted.kneighbors(precomputed_distances)
-
-    distances = np.sort(distances, axis=0)
-    distances = distances[:, 1]
-    elbow_ = plt.plot(distances)
-    elbow_[0].figure.show()
-
-    from kneed import KneeLocator
-    y = distances
-    x = range(1, len(distances)+1)
-    kn = KneeLocator(x, y, curve='convex', direction='increasing')
-    print(f'Best knee is {kn.knee}')
-
-    plt.xlabel('number of clusters k')
-    plt.ylabel('Sum of squared distances')
-    plt.plot(x, y, 'bx-')
-    plt.vlines(kn.knee, plt.ylim()[0], plt.ylim()[1], linestyles='dashed')
-    theoretical_eps = kn.knee
-    return theoretical_eps
 
 
 def precompute_distances(x, frame_ids, tube_ids):
@@ -212,83 +163,6 @@ def k_means_k30(x, k, frame_ids=None):
     return cluster_ids, kmeans.cluster_centers_
 
 
-def dbscan(x, k, frame_ids=None, eps_span=13.0, initial_eps=12.001):
-    counter = 1
-    max_iterations = 7
-    drill_down_iterations = 4
-    best_clusters = None
-    best_k = 0
-    k_tolerance = 0.2*k
-    is_best = False
-    best_eps = initial_eps
-    from_eps = best_eps
-    epsilon = None
-    eps_step = -1
-    for j in range(drill_down_iterations):
-        eps_step = eps_span / max_iterations
-        prev_k = -1
-        before_prev_k = -1
-        for i in range(max_iterations):
-            epsilon = from_eps + 1.*i*eps_step
-            clustering = DBSCAN(eps=epsilon, min_samples=3, p=2.0, n_jobs=-1, metric='l2').fit(x)
-            clusters = clustering.labels_
-
-            actual_k = len(set([c for c in clusters if c >= 0]))
-            if abs(actual_k-k) < abs(best_k-k):
-                best_k = actual_k
-                best_clusters = clusters
-                best_eps = epsilon
-            if actual_k - k_tolerance <= k <= actual_k + k_tolerance:
-                print('DBSCAN yielded {} close enough to the estimation with eps={}, k={} - stopping the search...'
-                      .format(actual_k, epsilon, k))
-                is_best = True
-                break
-            print('DBSCAN yielded {} clusters while the estimation was {}. Epsilon={}'.format(actual_k, k, epsilon))
-            counter += 1
-
-            # when the epsilon is converged into 1 no point to continue
-            if (prev_k >= 1 and actual_k == 1) or (before_prev_k > prev_k > actual_k):
-                print('overshoot...')
-                break
-            before_prev_k = prev_k
-            prev_k = actual_k
-
-        if is_best:
-            break
-        eps_span = 2.0 * eps_step
-
-        from_eps = epsilon if best_k == 0 else max(1e-2, best_eps - .95 * eps_step)
-
-    best_k = len(set([c for c in best_clusters if c >= 0]))
-    print('actual k by DBSCAN is {} with epsilon={}'.format(best_k, best_eps))
-
-    # find centers
-    cluster_centers, best_ids = get_cluster_centers(x, best_clusters)
-    return best_clusters, cluster_centers
-
-
-def gradient_descent(x_name, func, func_dict, lower_bound, upper_bound, rhs_goal, max_iter=30, tolerance=1.0,
-                     momentum=0.5, learning_rate=0.1):
-    epsilon = 1e-4
-    x = lower_bound + epsilon
-    best_x = x
-    best_delta = upper_bound - lower_bound
-    counter = 0
-    while True:
-        func_dict[x_name] = x
-        delta = func(**func_dict) - rhs_goal
-        if abs(delta) < abs(best_delta):
-            best_x = x
-            best_delta = delta
-
-        if abs(best_delta) < tolerance or counter >= max_iter:
-            break
-
-        x = x - learning_rate * delta
-
-    return best_x
-
-
 def spectral(x, k, frame_ids=None):
     clustering = SpectralClustering(n_clusters=k, assign_labels="discretize", affinity='cosine').fit(x)
 
@@ -314,37 +188,11 @@ def modularity_maximization_06_coframe_penalty_045_time995(x, k, frame_ids=None)
     return label_pred, cluster_centers
 
 
-def modularity_maximization_at_k(x, k, frame_ids=None):
-    similarity_graph = initialize_similarity_matrix(x, frame_ids)
-
-    graph = EntityGraph()
-    sample_ids = range(x.shape[0])
-    keep_edge_percentage = 0.6
-    sample_importance = np.ones(x.shape[0])
-    graph.build_graph_entities(similarity_matrix=similarity_graph, entities=sample_ids,
-                               entities_frequencies=sample_importance, keep_edge_percentage=keep_edge_percentage)
-    partitions = graph.get_communities_at_level(resolution=0.995, level=k)
-    label_pred = np.asarray([v for k, v in partitions.items()])
-
-    # find centers
-    cluster_centers, best_ids = get_cluster_centers(x, label_pred)
-    return label_pred, cluster_centers
-
-
 def mean_shift(X, k, frame_ids=None):
     clustering = MeanShift().fit(X)
 
     # find centers
     cluster_centers, best_ids = get_cluster_centers(X, clustering.labels_)
-    return clustering.labels_, cluster_centers
-
-
-def mean_shift_orphans(x, k, frame_ids=None):
-    """Not all data points assigned to clusters - some are disregarded as noise"""
-    clustering = MeanShift(cluster_all=False).fit(x)
-
-    # find centers
-    cluster_centers, best_ids = get_cluster_centers(x, clustering.labels_)
     return clustering.labels_, cluster_centers
 
 
@@ -358,14 +206,6 @@ def agglomerative_at_k_complete(x, k, frame_ids=None):
 
 def agglomerative_at_k(x, k, frame_ids=None):
     clustering = AgglomerativeClustering(n_clusters=k, compute_full_tree=True, affinity="euclidean", linkage="average").fit(x)
-
-    # find centers
-    cluster_centers, best_ids = get_cluster_centers(x, clustering.labels_)
-    return clustering.labels_, cluster_centers
-
-
-def agglomerative(x, k, frame_ids=None):
-    clustering = AgglomerativeClustering(compute_full_tree=True, affinity="cosine", linkage="complete").fit(x)
 
     # find centers
     cluster_centers, best_ids = get_cluster_centers(x, clustering.labels_)
@@ -418,16 +258,6 @@ def initialize_similarity_matrix(x, frame_ids):
         return similarity_graph
 
 
-def estimate_clusters_significance(clusters, features, k, bbox_ids, confidences):
-    dict_conf = dict(zip(bbox_ids, confidences))
-
-    # clusters = get_clusters(features, False, k, bbox_ids)
-    add_scores_to_clusters(clusters, dict_conf, features, bbox_ids)
-    new_clusters = filter_clusters(clusters, features, bbox_ids, dict_conf)
-    add_scores_to_clusters(new_clusters, dict_conf, features, bbox_ids)
-    return new_clusters
-
-
 def get_exp_dist(dist):
     sigma = 1.5
     return math.exp(-(dist / sigma)**2)
@@ -459,53 +289,3 @@ def add_score_per_key(clusters, dict_conf, features, image_ids, key):
     scores = [get_score(c, d) for d, c in zip(clusters[key]['dist2ct'], clusters[key]['conf'])]
     scores = [math.sqrt(s) for s in scores]
     clusters[key]['scores'] = scores
-
-
-def add_scores_to_clusters(clusters, dict_conf, features, image_ids):
-    print('\tAdding Score')
-    for key in clusters.keys():
-        add_score_per_key(clusters, dict_conf, features, image_ids, key)
-
-
-def get_clusters(x, normalize_features, k, image_ids):
-    min_norm = 0.01
-    if normalize_features:
-        x = [x / np.max([min_norm, np.linalg.norm(x)]) for x in x]
-    x = np.asarray(x)
-
-    # KMeans clustering
-    kmeans = KMeans(n_clusters=k)
-    kmeans.fit(x)
-    cluster_classes = kmeans.predict(x)
-
-    clusters = {}
-    for key, val in zip(cluster_classes, image_ids):
-        if key not in clusters:
-            clusters[key] = {'path_images': []}
-        clusters[key]['path_images'].append(val)
-
-    return clusters
-
-
-def filter_clusters(clusters, features, image_ids, dict_conf):
-    print('\tFiltering Clusters')
-    new_clusters = {}
-    for key in clusters.keys():
-        new_clusters[key] = {'path_images': clusters[key]['path_images']}
-        new_clusters['outliers_' + str(key)] = {'path_images': []}
-        while True:
-            add_score_per_key(new_clusters, dict_conf, features, image_ids, key)
-            scores = new_clusters[key]['scores']
-            q25 = np.percentile(scores, 25)
-            q75 = np.percentile(scores, 75)
-            iqr = q75 - q25
-            thresh = q25 - 1.5*iqr
-            idx_to_discard = [i for i, s in enumerate(scores) if s < thresh]
-            if len(idx_to_discard) == 0:
-                break
-            path_images = new_clusters[key]['path_images']
-            new_clusters['outliers_' + str(key)]['path_images'] += [path for i, path in enumerate(path_images) if i in idx_to_discard]
-            new_clusters[key]['path_images'] = [path for i, path in enumerate(path_images) if i not in idx_to_discard]
-        if len(new_clusters['outliers_' + str(key)]['path_images']) == 0:
-            new_clusters.pop('outliers_' + str(key))
-    return new_clusters

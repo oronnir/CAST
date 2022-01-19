@@ -1,9 +1,9 @@
-""" Create a new IC project
+""" Create a new Image Classification project
 
 two folder, one train, one test,
 each folder have sub-folder grouped by tag
 
-this format only support multi-class, for multi-label use txt file input type
+this format only support multi-class, for multi-label
 
 """
 import glob
@@ -25,15 +25,15 @@ class ICProjectCreator(object):
         trainer = CustomVisionTrainingClient(ENDPOINT, self.credentials)
         self.training_api = trainer
 
-    def create_project(self, trainset_path, dataset_name):
+    def create_project(self, training_path, dataset_name):
         # Create a new project
         print("Creating project...")
         project_name = dataset_name
         project = self.training_api.create_project(project_name)
         print("Project Id: {}".format(project.id))
 
-        if os.path.exists(trainset_path):
-            all_classes = [c for c in glob.glob(os.path.join(trainset_path, '*'))]
+        if os.path.exists(training_path):
+            all_classes = [c for c in glob.glob(os.path.join(training_path, '*'))]
             print("add images for dataset {0}".format(dataset_name))
             for class_path in all_classes:
                 img_paths = glob.glob(os.path.join(class_path, '*'))
@@ -70,7 +70,7 @@ class ICProjectCreator(object):
             print("upload succeed for dataset {0}".format(dataset_name))
             return project
         else:
-            print("file path {0} not exist".format(trainset_path))
+            print("file path {0} not exist".format(training_path))
 
 
 def main():

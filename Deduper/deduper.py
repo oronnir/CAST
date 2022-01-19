@@ -12,13 +12,14 @@ config = Configuration().get_configuration()
 EXE_PATH = config['deduper']
 
 
-class PranjaWrapper:
+class EdhWrapper:
     """
-    This module computes Edge Directional Histogram EDH features for duplicates consolidation.
+    This proprietary C++ module computes Edge Directional Histogram EDH features for duplicates consolidation.
 
     NOTE: Its application optimizes the downstream clustering, but it is not mandatory for CAST.
     More details are available in the paper.
     """
+
     def __init__(self):
         self.exe_path = EXE_PATH
         if not os.path.isfile(self.exe_path):
@@ -39,6 +40,10 @@ class PranjaWrapper:
 
 
 class GraphAnalyzer:
+    """
+    Find cliques in graph G=(Bounding boxes, EDH Cosine Similarities).
+    """
+
     def __init__(self, features):
         graph_csr = GraphAnalyzer.vectors_to_csr(features)
         self.Graph = nx.from_scipy_sparse_matrix(graph_csr)
@@ -54,5 +59,4 @@ class GraphAnalyzer:
         duplications = csr_matrix((n, n), dtype=np.int8)
         threshold = 0.995
         duplications[cosine_sim > threshold] = 1
-
         return duplications

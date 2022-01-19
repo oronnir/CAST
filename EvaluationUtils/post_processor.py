@@ -9,7 +9,7 @@ from Animator.consolidation_api import CharacterDetectionOutput
 import numpy as np
 from numpy import linalg as LA
 from collections import Counter
-from Animator.cluster_logic import GroupingEvaluator
+from Animator.cluster_logic import ConsolidationEvaluator
 import Animator.clustering_methods as cm
 from .detection_mapping import DetectionMapping
 from Animator.utils import recreate_dir, create_dir_if_not_exist
@@ -78,7 +78,7 @@ class MockCharacterGrouper(object):
             self.get_cluster_centers_best_bbox_and_significance(cluster_labels)
 
         # print silhouette index
-        GroupingEvaluator.unsupervised_evaluate_clusters(self.FEATURES, cluster_labels, 'OPTICS_ReCluster')
+        ConsolidationEvaluator.unsupervised_evaluate_clusters(self.FEATURES, cluster_labels, 'OPTICS_ReCluster')
 
         return self.IDS, cluster_labels, actual_best_k, best_bbox_ids, cluster_significance, id_to_sample_significance
 
@@ -362,7 +362,7 @@ def post_process_single_episode(eval_root, ser, role):
     character_detections = CharacterDetectionOutput.read_from_json(detection_output_path)
     grouping_output_path = os.path.join(role_path, 'animationgroupingoutput.json')
     mapping = DetectionMapping.parse_index(detection_output_path, grouping_output_path)
-    id_to_group = {mapp.Id: mapp.BboxGroup for mapp in mapping}
+    id_to_group = {mapp.Id: mapp.BoxesConsolidation for mapp in mapping}
 
     detection_id_set = set(d.ThumbnailId for d in character_detections.CharacterBoundingBoxes)
     grouping_id_set = set(m.ThumbnailId for m in mapping)

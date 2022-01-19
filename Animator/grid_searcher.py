@@ -5,7 +5,7 @@ import time
 import json
 import pandas as pd
 import Animator.utils
-from . import batch_grouper
+from . import batch_consolidator
 from . import clustering_methods as cm
 from . import normalization_methods as nm
 

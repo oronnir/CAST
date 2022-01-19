@@ -10,7 +10,7 @@ from Animator.utils import eprint, profiling, hash_values
 import Animator.normalization_methods as nm
 import Animator.clustering_methods as cm
 import Animator.consolidator as bbg
-from Animator.cluster_logic import GroupingEvaluator
+from Animator.cluster_logic import ConsolidationEvaluator
 
 
 # read configuration
@@ -134,19 +134,19 @@ def group_bboxes_batch(input_folder, output_path, hyper_parameters):
                       "--keep-cluster-percentile", keep_cluster_percentile
                       )
 
-        bbox_grouper = bbg.BboxGrouper(args=video_args, cluster_analysis=clustering_function,
-                                       normalization_method=normalization_method)
+        bbox_grouper = bbg.BoxConsolidator(args=video_args, cluster_analysis=clustering_function,
+                                           normalization_method=normalization_method)
         bbox_grouper_parsed_args = bbg.read_and_validate_args(video_args)
         hyper_params = dict(normalization_method=normalization_method.__name__,
                             cluster_analysis=clustering_function.__name__)
         detected_bboxes = bbox_grouper_parsed_args[0]
-        grouping_evaluator = GroupingEvaluator(hyper_params)
+        grouping_evaluator = ConsolidationEvaluator(hyper_params)
 
         print(colored("Start analyzing file #{} out of {} named: {}".format(i + 1, num_videos,
                                                                             os.path.basename(video_name)), 'yellow'))
 
         # extract features and group single video
-        bboxes_groups = bbox_grouper.group_characters_single_video(time_marker)
+        bboxes_groups = bbox_grouper.consolidate_characters_single_video(time_marker)
 
         # copy thumbnails per cluster for visualization
         create_clusters_visualization(video_output_folder, video_name, bboxes_groups, detected_bboxes)

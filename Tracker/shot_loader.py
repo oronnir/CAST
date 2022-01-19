@@ -1,7 +1,7 @@
 import cv2
 import json
 import numpy as np
-from Animator.consolidation_api import CharacterDetectionOutput, CharacterGroupingOutput
+from Animator.consolidation_api import CharacterDetectionOutput, CharacterConsolidationOutput
 from Detector.background_cropper import Range
 from datetime import timedelta
 from dateutil.parser import parse
@@ -14,7 +14,7 @@ class ShotsLoader:
         self.detection_json_path = detection_json_path
         self.grouping_json_path = grouping_json_path
         self.detections = CharacterDetectionOutput.read_from_json(self.detection_json_path)
-        self.keyframe_to_detections = self.detections.group_by_keyframes()
+        self.keyframe_to_detections = self.detections.consolidate_by_keyframes()
         with open(insights_json_path, 'r') as vi_insights:
             self.insights_full = json.load(vi_insights)
         self.insights = self.insights_full['videos'][0]['insights']

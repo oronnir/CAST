@@ -205,7 +205,7 @@ def main():
             should_run_similarity_sanity_check = False
             if should_run_similarity_sanity_check:
                 for bbox in character_detections.CharacterBoundingBoxes:
-                    if_exist = [m for m in mapping if m.ThumbnailId == bbox.ThumbnailId and m.BboxGroup < 0]
+                    if_exist = [m for m in mapping if m.ThumbnailId == bbox.ThumbnailId and m.BoxesConsolidation < 0]
                     if len(if_exist) == 0:
                         continue
 
@@ -229,8 +229,8 @@ def main():
 
             noise_repo = os.path.join(groups_root, '', 'All_noisy_clusters')
             for bbox in mapping:
-                cluster_repo = os.path.join(groups_root, '', 'Cluster_{}'.format(bbox.BboxGroup))
-                if bbox.BboxGroup < 0:
+                cluster_repo = os.path.join(groups_root, '', 'Cluster_{}'.format(bbox.BoxesConsolidation))
+                if bbox.BoxesConsolidation < 0:
                     cluster_repo = noise_repo
 
                 if not os.path.isdir(cluster_repo):

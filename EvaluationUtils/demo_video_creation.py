@@ -1,4 +1,4 @@
-from CustomVisionWrapper.predict_ic import pred_classification_project
+from CustomVisionWrapper.predict_image_classifier import pred_classification_project
 from Animator.consolidation_api import CharacterDetectionOutput
 import os
 import shutil

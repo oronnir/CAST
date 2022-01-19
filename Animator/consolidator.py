@@ -10,9 +10,9 @@ import numpy as np
 
 import Animator.clustering_methods as cm
 import Animator.normalization_methods as nm
-from Deduper.deduper import GraphAnalyzer, PranjaWrapper
+from Deduper.deduper import GraphAnalyzer, EdhWrapper
 from Animator.consolidation_api import CharacterDetectionOutput
-from Animator.cluster_logic import CharacterGrouper
+from Animator.cluster_logic import CharacterConsolidator
 from Animator.simple_clustering import my_simple_clustering
 from Animator.utils import eprint, profiling
 
@@ -24,7 +24,7 @@ _EDH_REPO = '???\\EDH'
 SEED = 1234567
 
 
-class BboxGroup(object):
+class BoxesConsolidation(object):
     def __init__(self, bbox_id, bbox_thumbnail_id, bbox_name, cluster_id, is_best_thumbnail):
         self.Id = bbox_id
         self.ThumbnailId = bbox_thumbnail_id
@@ -33,7 +33,7 @@ class BboxGroup(object):
         self.IsBest = is_best_thumbnail
 
 
-class BboxGrouper(object):
+class BoxConsolidator(object):
     def __init__(self, args, cluster_analysis, normalization_method):
         # initialize the seeds for batch purposes
         random.seed(SEED)
@@ -43,7 +43,7 @@ class BboxGrouper(object):
             min_cluster_significance, max_short_edge_absolute, max_short_edge_ratio, keep_cluster_percentile, \
             min_cluster_size, cliques = read_and_validate_args(args)
 
-        filtered_character_detections, noisy_bboxes, rep_to_dups, duplicates = BboxGrouper._filter_noisy_bboxes(
+        filtered_character_detections, noisy_bboxes, rep_to_dups, duplicates = BoxConsolidator._filter_noisy_bboxes(
             character_detections,
             min_conf_percentile,
             min_short_edge_absolute,
@@ -52,25 +52,25 @@ class BboxGrouper(object):
             max_short_edge_ratio,
             cliques)
 
-        self.ALL_CHARACTER_DETECTIONS = character_detections
-        self.VALID_CHARACTER_DETECTIONS = filtered_character_detections
-        self.NOISY_CHARACTER_DETECTIONS = noisy_bboxes
-        self.OUTPUT_PATH = output_path
-        self.GROUPER = CharacterGrouper(detected_bboxes=filtered_character_detections,
-                                        cluster_analysis=cluster_analysis,
-                                        normalization_method=normalization_method,
-                                        min_cluster_significance=min_cluster_significance,
-                                        keep_cluster_percentile=keep_cluster_percentile,
-                                        min_cluster_size=min_cluster_size)
-        self.SHOULD_YIELD_NEGATIVE_EXAMPLES = should_yield_negative_examples
-        self.MIN_BG_WIDTH = min_subframe_width
-        self.MIN_BG_HEIGHT = min_subframe_height
-        self.MI_BG_AREA = min_subframe_area
-        self.MAX_UNIQUE_BOXES = max_unique_boxes
-        self.KEYFRAME_WIDTH = character_detections.NativeKeyframeWidth
-        self.KEYFRAME_HEIGHT = character_detections.NativeKeyframeHeight
-        self.DUP_CLIQUES = rep_to_dups
-        self.DUPLICATES = duplicates
+        self.all_character_detections = character_detections
+        self.valid_character_detections = filtered_character_detections
+        self.noisy_character_detections = noisy_bboxes
+        self.output_path = output_path
+        self.consolidator = CharacterConsolidator(detected_bboxes=filtered_character_detections,
+                                                  cluster_analysis=cluster_analysis,
+                                                  normalization_method=normalization_method,
+                                                  min_cluster_significance=min_cluster_significance,
+                                                  keep_cluster_percentile=keep_cluster_percentile,
+                                                  min_cluster_size=min_cluster_size)
+        self.should_yield_negative_examples = should_yield_negative_examples
+        self.min_bg_width = min_subframe_width
+        self.min_bg_height = min_subframe_height
+        self.min_bg_area = min_subframe_area
+        self.max_unique_boxes = max_unique_boxes
+        self.keyframe_width = character_detections.NativeKeyframeWidth
+        self.keyframe_height = character_detections.NativeKeyframeHeight
+        self.dup_cliques = rep_to_dups
+        self.duplicates = duplicates
 
     @staticmethod
     def _filter_noisy_bboxes(input_detections, min_conf_percentile, min_short_edge_absolute, min_short_edge_ratio,
@@ -128,33 +128,33 @@ class BboxGrouper(object):
 
     def serialize_result(self, predicted_labels_obj, k, bg_negative_examples):
         """ save resulting clusters to json """
-        if os.path.isfile(self.OUTPUT_PATH):
-            os.remove(self.OUTPUT_PATH)
+        if os.path.isfile(self.output_path):
+            os.remove(self.output_path)
 
         # serializing the characters bboxes
-        bboxes_groups = []
-        for bbox_group in predicted_labels_obj:
-            bbox_group.BboxName = int(bbox_group.BboxName)
-            bbox_group.Id = int(bbox_group.Id)
-            bboxes_groups.append(bbox_group.__dict__)
+        boxes_consolidations = []
+        for box_consolidation in predicted_labels_obj:
+            box_consolidation.BboxName = int(box_consolidation.BboxName)
+            box_consolidation.Id = int(box_consolidation.Id)
+            boxes_consolidations.append(box_consolidation.__dict__)
 
         # serializing the BG negative examples
         bg_negatives = [bg_negative_example.to_dict() for bg_negative_example in bg_negative_examples]
 
-        grouping_response = dict(NumClusters=k, BoundingBoxesGroups=bboxes_groups,
-                                 BackgroundNegativeExamples=bg_negatives)
+        consolidation_response = dict(NumClusters=k, BoundingBoxesGroups=boxes_consolidations,
+                                      BackgroundNegativeExamples=bg_negatives)
         exception_message = ''
 
         try:
-            with open(self.OUTPUT_PATH, "w") as text_file:
-                json.dump(grouping_response, text_file)
+            with open(self.output_path, "w") as text_file:
+                json.dump(consolidation_response, text_file)
 
-                if os.path.isfile(self.OUTPUT_PATH):
+                if os.path.isfile(self.output_path):
                     return 0
         except Exception as e:
             exception_message = ' with exception: \'{}\'' % e
 
-        eprint('failed serializing output_file: \'{0}\'{1}'.format(self.OUTPUT_PATH, exception_message))
+        eprint('failed serializing output_file: \'{0}\'{1}'.format(self.output_path, exception_message))
         return 1
 
     def find_background_negative_examples(self, min_subframe_width, min_subframe_height, min_subframe_area,
@@ -168,13 +168,13 @@ class BboxGrouper(object):
 
         return all_bg_examples
 
-    def group_characters_single_video(self, time_marker):
+    def consolidate_characters_single_video(self, time_marker):
         time_marker = profiling("Parsed args", time_marker)
 
-        bbox_ids, predicted_labels, k, best_thumbnails = my_simple_clustering(self.GROUPER.IDS, self.GROUPER.FEATURES,
-                                                                              self.GROUPER.KeyFrameIndices)
+        bbox_ids, predicted_labels, k, best_thumbnails = my_simple_clustering(self.consolidator.IDS, self.consolidator.FEATURES,
+                                                                              self.consolidator.KeyFrameIndices)
         bbox_id_to_detection = {
-            detection.Id: detection for detection in self.ALL_CHARACTER_DETECTIONS.CharacterBoundingBoxes
+            detection.Id: detection for detection in self.all_character_detections.CharacterBoundingBoxes
         }
 
         bbox_id_to_label = dict(zip(bbox_ids, predicted_labels))
@@ -184,10 +184,10 @@ class BboxGrouper(object):
             if label < 0:
                 continue
 
-            potential_clique = self.DUP_CLIQUES.get(bbox_id_to_detection[box_id].ThumbnailId, None)
+            potential_clique = self.dup_cliques.get(bbox_id_to_detection[box_id].ThumbnailId, None)
             if potential_clique:
                 for dup_thumb in potential_clique:
-                    dup = self.DUPLICATES[dup_thumb]
+                    dup = self.duplicates[dup_thumb]
                     dup.Id = top_id
                     top_id += 1
                     dups_labs[dup.Id] = [dup, label]
@@ -199,38 +199,38 @@ class BboxGrouper(object):
         for k, v in dups_labs.items():
             bbox_id_to_label[k] = v[1]
 
-        time_marker = profiling("group by features", time_marker)
+        time_marker = profiling("consolidate by features", time_marker)
         background_negative_examples = []
-        if self.SHOULD_YIELD_NEGATIVE_EXAMPLES:
+        if self.should_yield_negative_examples:
             time_marker = profiling("Calculate background negative examples", time_marker)
-            background_negative_examples = self.find_background_negative_examples(self.MIN_BG_WIDTH,
-                                                                                  self.MIN_BG_HEIGHT,
-                                                                                  self.MI_BG_AREA,
-                                                                                  self.MAX_UNIQUE_BOXES)
-        bboxes_groups = []
+            background_negative_examples = self.find_background_negative_examples(self.min_bg_width,
+                                                                                  self.min_bg_height,
+                                                                                  self.min_bg_area,
+                                                                                  self.max_unique_boxes)
+        boxes_consolidations = []
         for bbox_id in bbox_ids:
-            bbox_group = BboxGroup(bbox_id=int(bbox_id),
-                                   bbox_thumbnail_id=bbox_id_to_detection[bbox_id].ThumbnailId,
-                                   bbox_name=int(bbox_id),
-                                   cluster_id=int(bbox_id_to_label[bbox_id]),
-                                   is_best_thumbnail=bbox_id in best_thumbnails)
-            bboxes_groups.append(bbox_group)
+            bbox_consolidation = BoxesConsolidation(bbox_id=int(bbox_id),
+                                    bbox_thumbnail_id=bbox_id_to_detection[bbox_id].ThumbnailId,
+                                    bbox_name=int(bbox_id),
+                                    cluster_id=int(bbox_id_to_label[bbox_id]),
+                                    is_best_thumbnail=bbox_id in best_thumbnails)
+            boxes_consolidations.append(bbox_consolidation)
 
         # append all noise to output
         initial_noise_cluster_id = np.min(predicted_labels)
-        for noisy_bbox_index in range(len(self.NOISY_CHARACTER_DETECTIONS)):
-            bbox_group = BboxGroup(bbox_id=self.NOISY_CHARACTER_DETECTIONS[noisy_bbox_index].Id,
-                                   bbox_thumbnail_id=self.NOISY_CHARACTER_DETECTIONS[noisy_bbox_index].ThumbnailId,
-                                   bbox_name=self.NOISY_CHARACTER_DETECTIONS[noisy_bbox_index].Id,
-                                   cluster_id=int(initial_noise_cluster_id - 1 * (noisy_bbox_index + 1)),
-                                   is_best_thumbnail=True)
-            bboxes_groups.append(bbox_group)
-        bboxes_groups = sorted(bboxes_groups, key=lambda box: box.Id)
+        for noisy_bbox_index in range(len(self.noisy_character_detections)):
+            bbox_consolidation = BoxesConsolidation(bbox_id=self.noisy_character_detections[noisy_bbox_index].Id,
+                                    bbox_thumbnail_id=self.noisy_character_detections[noisy_bbox_index].ThumbnailId,
+                                    bbox_name=self.noisy_character_detections[noisy_bbox_index].Id,
+                                    cluster_id=int(initial_noise_cluster_id - 1 * (noisy_bbox_index + 1)),
+                                    is_best_thumbnail=True)
+            boxes_consolidations.append(bbox_consolidation)
+        boxes_consolidations = sorted(boxes_consolidations, key=lambda box: box.Id)
 
-        if bboxes_groups is not None:
-            self.serialize_result(bboxes_groups, k, background_negative_examples)
+        if boxes_consolidations is not None:
+            self.serialize_result(boxes_consolidations, k, background_negative_examples)
             _ = profiling("Serialized results", time_marker)
-            return bboxes_groups
+            return boxes_consolidations
 
         _ = profiling("Failed clustering - Killing program", time_marker)
         return None
@@ -242,7 +242,7 @@ def read_and_validate_args(args):
     :param args: properties
     :return: arguments or throws ValueError exception
     """
-    parser = argparse.ArgumentParser(description='Bounding box grouper version: {}'.format(_VERSION))
+    parser = argparse.ArgumentParser(description='Bounding box consolidator version: {}'.format(_VERSION))
     parser.add_argument("--input", "-i", type=str, help="Input JSON")
     parser.add_argument("--output", "-o", type=str, help="Output JSON")
     parser.add_argument("--min-confidence-percentile", type=int, default=7,
@@ -309,7 +309,7 @@ def read_and_validate_args(args):
                           .format(current_featurizer_dim, _REQUIRED_FEATURIZER_DIM))
 
     # EDH features based identical image exclusion
-    cliques = group_identical_bboxes(character_detections, input_json)
+    cliques = consolidate_identical_boxes(character_detections, input_json)
 
     return character_detections, output_file_path, yield_negative_examples, min_subframe_width, min_subframe_height, \
         min_subframe_area, max_unique_boxes, min_conf_percentile, min_short_edge_absolute, min_short_edge_ratio, \
@@ -317,7 +317,7 @@ def read_and_validate_args(args):
         min_cluster_size, cliques
 
 
-def group_identical_bboxes(character_detections, input_json):
+def consolidate_identical_boxes(character_detections, input_json):
     # adding EDH features - extract if not exist
     edh_json_name = "edh_features.json"
     working_folder, _ = os.path.split(input_json)
@@ -325,7 +325,7 @@ def group_identical_bboxes(character_detections, input_json):
     if os.path.isfile(edh_json_path):
         edh_character_detections = CharacterDetectionOutput.read_from_json(edh_json_path)
     else:
-        edh_extractor = PranjaWrapper()
+        edh_extractor = EdhWrapper()
         edh_character_detections = edh_extractor.extract_edh_features(input_json, edh_json_path)
 
     id_to_edh = {bbox.ThumbnailId: bbox.Features for bbox in edh_character_detections.CharacterBoundingBoxes}
@@ -349,7 +349,7 @@ def group_identical_bboxes(character_detections, input_json):
     return cliques
 
 
-def bbox_grouper_main():
+def box_consolidator_main():
     print('Start {}, version: {}'.format(__name__, _VERSION))
 
     # validating input
@@ -357,13 +357,13 @@ def bbox_grouper_main():
         cluster_analysis = getattr(cm, 'k_means')
         normalization_method = getattr(nm, 'identity')
 
-        grouper = BboxGrouper(sys.argv, cluster_analysis, normalization_method)
+        consolidator = BoxConsolidator(sys.argv, cluster_analysis, normalization_method)
         time_marker = time.time()
-        if grouper.group_characters_single_video(time_marker) is not None:
+        if consolidator.consolidate_characters_single_video(time_marker) is not None:
             print('Successful run ended')
             # sys.exit(0)
         else:
-            eprint('Failed running bbox_grouper')
+            eprint('Failed running box_consolidator')
             sys.exit(1)
 
     except Exception as e:

@@ -18,53 +18,6 @@ def silhouette_score(x, labels_pred):
     return silhouette
 
 
-def sum_of_squares(x, k):
-    kmeans = KMeans(n_clusters=k)
-    kmeans.fit(x)
-    score = kmeans.score(x)
-    return -score
-
-
-def davis_bouldin(x, labels_pred):
-    label_set = set(labels_pred)
-    if len(label_set) == 1:
-        return np.nan
-    score = metrics.davies_bouldin_score(x, labels_pred)
-    return score
-
-
-def gmm_bayesian_information_criterion(x, labels_pred):
-    label_set = set(labels_pred)
-    gmm = GaussianMixture(n_components=len(label_set))
-    gmm.fit(x)
-    bic = gmm.bic(x)
-    return bic
-
-
-def lasso_bayesian_information_criterion_tsne(x, labels_pred):
-    # dimensionality reduction
-    dimensions = 3
-    tsne = TSNE(n_components=dimensions, perplexity=40, n_iter=300)
-    tsne_x = tsne.fit_transform(x)
-
-    model_bic = LassoLarsIC(criterion='bic')
-    model_bic.fit(tsne_x, labels_pred)
-    alpha_bic_ = model_bic.alpha_
-    return alpha_bic_
-
-
-def gmm_bayesian_information_criterion_tsne(x, labels_pred):
-    # dimensionality reduction
-    dimensions = 3
-    tsne = TSNE(n_components=dimensions, perplexity=40, n_iter=300)
-    tsne_X = tsne.fit_transform(x)
-    label_set = set(labels_pred)
-    gmm = GaussianMixture(n_components=len(label_set))
-    gmm.fit(tsne_X)
-    bic = gmm.bic(tsne_X)
-    return bic
-
-
 def purity(y_true, y_pred):
     # compute contingency matrix (also called confusion matrix)
     contingency_matrix = metrics.cluster.contingency_matrix(y_true, y_pred)
