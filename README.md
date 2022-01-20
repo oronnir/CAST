@@ -4,7 +4,7 @@ Note: The CAST paper code, evaluation dataset, and models are to be stored here 
 Authors: Oron Nir, Gal Rapoport, and Ariel Shamir
 All technical details are available on [the paper](https://arxiv.org/abs/2201.07619).
 
-For more details reach out to oronnir11 <at> gmail <dot> com
+For more details reach out to oronnir11 at gmail dot com
 
 ## Abstract
 Cartoons and animation domain videos have very different characteristics compared to real-life images and videos. In addition, this domain carries a large variability in styles. Current computer vision and deep-learning solutions often fail on animated content because they were trained on natural images. In this paper we present a method to refine a semantic representation suitable for specific animated content. We first train a neural network on a large-scale set of animation videos and use the mapping to deep features as an embedding space. Next, we use self-supervision to refine the representation for any specific animation style by gathering many examples of animated characters in this style, using a multi-object tracking. These examples are used to define triplets for contrastive loss training.
