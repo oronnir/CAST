@@ -2,7 +2,7 @@
 ## (Published as a conference paper at EuroGraphics 2022)
 Note: The CAST paper code, evaluation dataset, and models are to be stored here soon.
 Authors: Oron Nir, Gal Rapoport, and Ariel Shamir
-All technical details are available on [the paper](https://arxiv.org/abs/2201.07619) and [the demo video](https://www.youtube.com/watch?v=dQw4w9WgXcQ).
+All technical details are available on [the paper](https://arxiv.org/abs/2201.07619).
 
 For more details reach out to oronnir11 <at> gmail <dot> com
 
