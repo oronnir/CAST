@@ -2,7 +2,7 @@
 ## (Published as a conference paper at EuroGraphics 2022)
 Note: The CAST paper code, evaluation dataset, and models are to be stored here soon.
 Authors: Oron Nir, Gal Rapoport, and Ariel Shamir
-All technical details are available on [the paper](https://www.youtube.com/watch?v=dQw4w9WgXcQ) and [the demo video](https://www.youtube.com/watch?v=dQw4w9WgXcQ).
+All technical details are available on [the paper](https://arxiv.org/abs/2201.07619) and [the demo video](https://www.youtube.com/watch?v=dQw4w9WgXcQ).
 
 For more details reach out to oronnir11 <at> gmail <dot> com
 
@@ -37,12 +37,12 @@ Other evaluation and visualization scripts that were developed towards EuroGraph
 #Citation
 Please cite our paper with the following bibtex:
 ```
-@inproceedings{TBD,
-  title={CAST: Character labeling in Animation using Self-supervision by Tracking},
-  author={Nir, Oron and Rapoport, Gal and Shamir, Ariel},
-  booktitle={Eurographics},
-  number={CONF},
-  pages={??--??},
-  year={2022}
+@misc{nir2022cast,
+      title={CAST: Character labeling in Animation using Self-supervision by Tracking}, 
+      author={Oron Nir and Gal Rapoport and Ariel Shamir},
+      year={2022},
+      eprint={2201.07619},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
 }
 ```
