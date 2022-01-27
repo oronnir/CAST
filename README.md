@@ -14,7 +14,7 @@ The pipeline below illustrates the major components. These steps are available i
 ![CAST Pipeline](figures/RL_flow.png)
 
 #Supported E2E flows:
-Here are the corresponding endpoint scripts (Python 3.10).
+Here are the corresponding endpoint scripts (Python 3.7.9).
 ~~~
 1. main_1.py Input: mp4, output: triplets (Windows).
    1.1. Split the video to shots.
