@@ -7,7 +7,7 @@ All technical details are available on [the paper](https://arxiv.org/abs/2201.07
 For more details reach out to oronnir11 at gmail dot com
 
 
-[![Watch the video]](https://www.youtube.com/watch?v=PsfNiIBwH1w)
+[<img src="https://img.youtube.com/vi/PsfNiIBwH1w/maxresdefault.jpg" width="50%">](https://www.youtube.com/watch?v=PsfNiIBwH1w)
 
 ## Abstract
 Cartoons and animation domain videos have very different characteristics compared to real-life images and videos. In addition, this domain carries a large variability in styles. Current computer vision and deep-learning solutions often fail on animated content because they were trained on natural images. In this paper we present a method to refine a semantic representation suitable for specific animated content. We first train a neural network on a large-scale set of animation videos and use the mapping to deep features as an embedding space. Next, we use self-supervision to refine the representation for any specific animation style by gathering many examples of animated characters in this style, using a multi-object tracking. These examples are used to define triplets for contrastive loss training.
