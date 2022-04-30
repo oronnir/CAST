@@ -39,12 +39,13 @@ Other evaluation and visualization scripts that were developed towards EuroGraph
 #Citation
 Please cite our paper with the following bibtex:
 ```
-@misc{nir2022cast,
-      title={CAST: Character labeling in Animation using Self-supervision by Tracking}, 
-      author={Oron Nir and Gal Rapoport and Ariel Shamir},
-      year={2022},
-      eprint={2201.07619},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
+@article {10.1111:cgf.14464,
+journal = {Computer Graphics Forum},
+title = {{CAST: Character labeling in Animation using Self-supervision by Tracking}},
+author = {Nir, Oron and Rapoport, Gal and Shamir, Ariel},
+year = {2022},
+publisher = {The Eurographics Association and John Wiley & Sons Ltd.},
+ISSN = {1467-8659},
+DOI = {10.1111/cgf.14464}
 }
 ```
