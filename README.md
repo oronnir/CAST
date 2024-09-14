@@ -8,6 +8,8 @@ For more details reach out to oronnir11 at gmail dot com
 
 [Watch the demo video!](https://www.youtube.com/embed/PsfNiIBwH1w)
 
+[The EuroGraphics 2022 Oral Session](https://www.youtube.com/live/cJn1FjXjrwE?si=YFYBjHHyki1w0V2e&t=9462)
+
 ## Abstract
 Cartoons and animation domain videos have very different characteristics compared to real-life images and videos. In addition, this domain carries a large variability in styles. Current computer vision and deep-learning solutions often fail on animated content because they were trained on natural images. In this paper we present a method to refine a semantic representation suitable for specific animated content. We first train a neural network on a large-scale set of animation videos and use the mapping to deep features as an embedding space. Next, we use self-supervision to refine the representation for any specific animation style by gathering many examples of animated characters in this style, using a multi-object tracking. These examples are used to define triplets for contrastive loss training.
 The refined semantic space allows better clustering of animated characters even when they have diverse manifestations. Using this space we can build dictionaries of characters in an animation videos, and define specialized classifiers for specific stylistic content (e.g., characters in a specific animation series) with very little user effort. These classifiers are the basis for automatically labeling characters in animation videos. We present results on a collection of characters in a variety of animation styles.
